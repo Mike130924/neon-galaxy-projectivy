@@ -29,6 +29,7 @@ jobs:
 
       - name: Extract Android project
         run: |
+          mkdir -p project
           unzip -q Neon_Galaxy_Audited_Build.zip -d project
 
       - name: Build APK
