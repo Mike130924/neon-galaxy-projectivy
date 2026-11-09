@@ -30,7 +30,7 @@ jobs:
       - name: Extract Android project
         run: |
           mkdir -p project
-          unzip -q unzip -q Neon_Galaxy_Cosmic_Glass_Test.zip -d project
+          unzip -q Neon_Galaxy_Cosmic_Glass_Test.zip -d project
 
       - name: Build APK
         working-directory: project
