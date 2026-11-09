@@ -4,7 +4,8 @@ name: Build Neon Galaxy APK
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -31,7 +32,35 @@ jobs:
 
       - name: Extract Android project
         run: |
-          unzip -q Neon_Galaxy_GitHub_Build_Project.zip -d project
+          mkdir -p project
+
+          ZIP_FILES=$(find . -maxdepth 1 -type f -iname '*.zip')
+
+          if [ -z "$ZIP_FILES" ]; then
+            echo "ERROR: No ZIP file found in repository root."
+            exit 1
+          fi
+
+          ZIP_COUNT=$(printf '%s\n' "$ZIP_FILES" | wc -l)
+
+          if [ "$ZIP_COUNT" -ne 1 ]; then
+            echo "ERROR: More than one ZIP file found."
+            echo "$ZIP_FILES"
+            echo "Please leave only the correct project ZIP in the repository."
+            exit 1
+          fi
+
+          ZIP_FILE=$(printf '%s\n' "$ZIP_FILES" | head -n 1)
+
+          echo "Extracting: $ZIP_FILE"
+          unzip -q "$ZIP_FILE" -d project
+
+          if [ ! -f project/gradlew ]; then
+            echo "ERROR: gradlew was not found in the extracted project."
+            echo "The ZIP may contain an extra parent folder."
+            find project -maxdepth 3 -type f -name gradlew
+            exit 1
+          fi
 
       - name: Build APK
         working-directory: project
