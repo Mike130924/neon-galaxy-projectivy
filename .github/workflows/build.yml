@@ -1,5 +1,5 @@
 
-name: Build Neon Galaxy APK V7
+name: Build Neon Galaxy APK V8
 
 on:
   workflow_dispatch:
@@ -26,10 +26,10 @@ jobs:
           echo "Android SDK: $ANDROID_HOME"
           test -d "$ANDROID_HOME"
 
-      - name: Extract Android project V7
+      - name: Extract Android project V8
         run: |
           mkdir -p project
-          unzip -q Neon_Galaxy_Cosmic_Glass_V7.zip -d project
+          unzip -q Neon_Galaxy_Cosmic_Glass_V8.zip -d project
 
       - name: Verify Android project
         run: |
@@ -37,7 +37,7 @@ jobs:
           test -f project/app/build.gradle || test -f project/app/build.gradle.kts
           echo "V7 source extracted successfully."
 
-      - name: Verify V7 icon mappings
+      - name: Verify V8 icon mappings
         run: |
           APPFILTER="project/app/src/main/assets/appfilter.xml"
 
@@ -47,24 +47,24 @@ jobs:
           grep -q 'com.vewd.core.browser/' "$APPFILTER"
           grep -q 'com.android.vending/' "$APPFILTER"
           grep -q 'com.google.android.youtube.tv/' "$APPFILTER" || true
-          echo "V7 mapping checks completed."
+          echo "V8 mapping checks completed."
 
-      - name: Build APK V7
+      - name: Build APK V8
         working-directory: project
         run: |
           chmod +x ./gradlew
           ./gradlew :app:assembleDebug --stacktrace
 
-      - name: Verify APK V7
+      - name: Verify APK V8
         run: |
           APK=$(find project/app/build/outputs/apk/debug -maxdepth 1 -name '*.apk' -print -quit)
           test -n "$APK"
           ls -lh "$APK"
 
-      - name: Save APK V7
+      - name: Save APK V8
         uses: actions/upload-artifact@v4
         with:
-          name: Neon-Galaxy-APK-v7
+          name: Neon-Galaxy-APK-v8
           path: project/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 30
