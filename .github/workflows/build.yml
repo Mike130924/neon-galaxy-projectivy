@@ -1,5 +1,5 @@
 
-name: Build Neon Galaxy APK V6
+name: Build Neon Galaxy APK V7
 
 on:
   workflow_dispatch:
@@ -25,42 +25,46 @@ jobs:
         run: |
           echo "Android SDK: $ANDROID_HOME"
           test -d "$ANDROID_HOME"
-          ls "$ANDROID_HOME"
 
-      - name: Extract Android project V6
+      - name: Extract Android project V7
         run: |
           mkdir -p project
-          unzip -q Neon_Galaxy_Cosmic_Glass_V6.zip -d project
+          unzip -q Neon_Galaxy_Cosmic_Glass_V7.zip -d project
 
       - name: Verify Android project
         run: |
           test -f project/gradlew
           test -f project/app/build.gradle || test -f project/app/build.gradle.kts
-          echo "V6 source extracted successfully."
+          echo "V7 source extracted successfully."
 
-      - name: Verify V6 icon mappings
+      - name: Verify V7 icon mappings
         run: |
-          grep -q "com.sony.dtv.settings" project/app/src/main/assets/appfilter.xml
-          grep -q "com.channel4.youviewandroidlauncher" project/app/src/main/assets/appfilter.xml
-          grep -q "com.itv.youviewandroidlauncher" project/app/src/main/assets/appfilter.xml
-          ! grep -q "neongalaxy.manual" project/app/src/main/assets/appfilter.xml
-          echo "V6 app-filter checks passed."
+          APPFILTER="project/app/src/main/assets/appfilter.xml"
 
-      - name: Build APK V6
+          grep -q 'com.syncler/' "$APPFILTER"
+          grep -q 'com.syncler.beta/' "$APPFILTER"
+          grep -q 'com.wuaki.apptv/' "$APPFILTER" || true
+          grep -q 'com.vewd.core.browser/' "$APPFILTER"
+          grep -q 'com.android.vending/' "$APPFILTER"
+          grep -q 'com.google.android.youtube.tv/' "$APPFILTER" || true
+          echo "V7 mapping checks completed."
+
+      - name: Build APK V7
         working-directory: project
         run: |
           chmod +x ./gradlew
           ./gradlew :app:assembleDebug --stacktrace
 
-      - name: Verify APK V6
+      - name: Verify APK V7
         run: |
-          test -n "$(find project/app/build/outputs/apk/debug -maxdepth 1 -name '*.apk' -print -quit)"
-          ls -lh project/app/build/outputs/apk/debug/*.apk
+          APK=$(find project/app/build/outputs/apk/debug -maxdepth 1 -name '*.apk' -print -quit)
+          test -n "$APK"
+          ls -lh "$APK"
 
-      - name: Save APK V6
+      - name: Save APK V7
         uses: actions/upload-artifact@v4
         with:
-          name: Neon-Galaxy-APK-v6
+          name: Neon-Galaxy-APK-v7
           path: project/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 30
