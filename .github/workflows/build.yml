@@ -1,5 +1,4 @@
-
-name: Build Neon Galaxy APK V3
+name: Build Neon Galaxy APK V4
 
 on:
   workflow_dispatch:
@@ -27,21 +26,42 @@ jobs:
           test -d "$ANDROID_HOME"
           ls "$ANDROID_HOME"
 
-      - name: Extract Android project V3
+      - name: Extract Android project V4
         run: |
-          mkdir -p project
-          unzip -q Neon_Galaxy_Cosmic_Glass_V3_Source.zip -d project
+          mkdir -p project icons
+          unzip -q Neon_Galaxy_Cosmic_Glass_V4_Source_Under25MB.zip -d project
+          unzip -q Neon_Galaxy_Main_Icons_14.zip -d icons
 
-      - name: Build APK V3
+      - name: Install V4 main icons for manual selection
+        run: |
+          set -e
+          test "$(find icons -maxdepth 1 -type f -name '*.png' | wc -l)" -eq 14
+          cp icons/Channel_4.png project/app/src/main/res/drawable-nodpi/neon_galaxy_channel_4.png
+          cp icons/File_Manager_Plus.png project/app/src/main/res/drawable-nodpi/neon_galaxy_file_manager_plus.png
+          cp icons/ITVX.png project/app/src/main/res/drawable-nodpi/neon_galaxy_itvx.png
+          cp icons/Live_TV_Catch_Up.png project/app/src/main/res/drawable-nodpi/neon_galaxy_live_tv_catch_up.png
+          cp icons/Media_Player.png project/app/src/main/res/drawable-nodpi/neon_galaxy_media_player.png
+          cp icons/Music.png project/app/src/main/res/drawable-nodpi/neon_galaxy_music.png
+          cp icons/My_BRAVIA.png project/app/src/main/res/drawable-nodpi/neon_galaxy_my_bravia.png
+          cp icons/Play_Games.png project/app/src/main/res/drawable-nodpi/neon_galaxy_play_games.png
+          cp icons/Settings.png project/app/src/main/res/drawable-nodpi/neon_galaxy_settings.png
+          cp icons/Sony_Select.png project/app/src/main/res/drawable-nodpi/neon_galaxy_sony_select.png
+          cp icons/TV.png project/app/src/main/res/drawable-nodpi/neon_galaxy_tv.png
+          cp icons/TV_Control_with_Smart_Speakers.png project/app/src/main/res/drawable-nodpi/neon_galaxy_tv_control_smart_speakers.png
+          cp icons/Timers_and_Clock.png project/app/src/main/res/drawable-nodpi/neon_galaxy_timers_clock.png
+          cp icons/Title_List.png project/app/src/main/res/drawable-nodpi/neon_galaxy_title_list.png
+          echo "Installed 14 additional main icon drawables."
+
+      - name: Build APK V4
         working-directory: project
         run: |
           chmod +x ./gradlew
           ./gradlew :app:assembleDebug --stacktrace
 
-      - name: Save APK V3
+      - name: Save APK V4
         uses: actions/upload-artifact@v4
         with:
-          name: Neon-Galaxy-APK-v3
+          name: Neon-Galaxy-APK-v4
           path: project/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 30
