@@ -1,5 +1,5 @@
 
-name: Build Neon Galaxy APK V5
+name: Build Neon Galaxy APK V6
 
 on:
   workflow_dispatch:
@@ -27,32 +27,40 @@ jobs:
           test -d "$ANDROID_HOME"
           ls "$ANDROID_HOME"
 
-      - name: Extract Android project V5
+      - name: Extract Android project V6
         run: |
           mkdir -p project
-          unzip -q Neon_Galaxy_Cosmic_Glass_V5.zip -d project
+          unzip -q Neon_Galaxy_Cosmic_Glass_V6.zip -d project
 
       - name: Verify Android project
         run: |
           test -f project/gradlew
           test -f project/app/build.gradle || test -f project/app/build.gradle.kts
-          echo "V5 source extracted successfully."
+          echo "V6 source extracted successfully."
 
-      - name: Build APK V5
+      - name: Verify V6 icon mappings
+        run: |
+          grep -q "com.sony.dtv.settings" project/app/src/main/assets/appfilter.xml
+          grep -q "com.channel4.youviewandroidlauncher" project/app/src/main/assets/appfilter.xml
+          grep -q "com.itv.youviewandroidlauncher" project/app/src/main/assets/appfilter.xml
+          ! grep -q "neongalaxy.manual" project/app/src/main/assets/appfilter.xml
+          echo "V6 app-filter checks passed."
+
+      - name: Build APK V6
         working-directory: project
         run: |
           chmod +x ./gradlew
           ./gradlew :app:assembleDebug --stacktrace
 
-      - name: Verify APK V5
+      - name: Verify APK V6
         run: |
-          ls -lh project/app/build/outputs/apk/debug/*.apk
           test -n "$(find project/app/build/outputs/apk/debug -maxdepth 1 -name '*.apk' -print -quit)"
+          ls -lh project/app/build/outputs/apk/debug/*.apk
 
-      - name: Save APK V5
+      - name: Save APK V6
         uses: actions/upload-artifact@v4
         with:
-          name: Neon-Galaxy-APK-v5
+          name: Neon-Galaxy-APK-v6
           path: project/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 30
