@@ -1,5 +1,5 @@
 
-name: Build Neon Galaxy APK
+name: Build Neon Galaxy APK V2
 
 on:
   workflow_dispatch:
@@ -27,21 +27,21 @@ jobs:
           test -d "$ANDROID_HOME"
           ls "$ANDROID_HOME"
 
-      - name: Extract Android project
+      - name: Extract Android project V2
         run: |
           mkdir -p project
-          unzip -q Neon_Galaxy_Cosmic_Glass_Test.zip -d project
+          unzip -q Neon_Galaxy_Cosmic_Glass_Test_v2_READY.zip -d project
 
-      - name: Build APK
+      - name: Build APK V2
         working-directory: project
         run: |
           chmod +x ./gradlew
           ./gradlew :app:assembleDebug --stacktrace
 
-      - name: Save APK
+      - name: Save APK V2
         uses: actions/upload-artifact@v4
         with:
-          name: Neon-Galaxy-APK
+          name: Neon-Galaxy-APK-v2
           path: project/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 30
